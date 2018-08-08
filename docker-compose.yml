@@ -1,10 +1,10 @@
-version: '2'
+version: '3'
 
 services:
   drone-server:
     image: drone/drone:0.8
     ports:
-      - 80:8000
+      - 18000:8000
       - 9000
     volumes:
       - ./drone:/var/lib/drone/
@@ -17,6 +17,14 @@ services:
 #      - DRONE_GITEA_CLIENT=${DRONE_GITEA_CLIENT}
 #      - DRONE_GITEA_SECRET=${DRONE_GITEA_SECRET}
       - DRONE_SECRET=${DRONE_SECRET}
+    networks:
+      - reverseproxy
+      - default
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=drone"
+      - "traefik.frontend.rule=Host:drone.wtakumi.io"
+      - "traefik.docker.network=traefik_reverseproxy"
 
   drone-agent:
     image: drone/agent:0.8
@@ -29,3 +37,8 @@ services:
     environment:
       - DRONE_SERVER=drone-server:9000
       - DRONE_SECRET=${DRONE_SECRET}
+
+networks:
+    reverseproxy:
+        external:
+            name: traefik_reverseproxy
