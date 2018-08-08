@@ -25,7 +25,7 @@ services:
     depends_on:
       - drone-server
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /docker.sock:/var/run/docker.sock
     environment:
       - DRONE_SERVER=drone-server:9000
       - DRONE_SECRET=${DRONE_SECRET}
