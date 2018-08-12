@@ -4,7 +4,6 @@ services:
   drone-server:
     image: drone/drone:0.8
     ports:
-      - 18000:8000
       - 9000
     volumes:
       - ./drone:/var/lib/drone/
@@ -22,9 +21,10 @@ services:
       - default
     labels:
       - "traefik.enable=true"
-      - "traefik.backend=drone"
-      - "traefik.frontend.rule=Host:drone.wtakumi.io"
+      - "traefik.backend=drone-server"
+      - "traefik.frontend.rule=Host:drone-server.wtakumi.io"
       - "traefik.docker.network=traefik_reverseproxy"
+      - "traefik.port=8000"
 
   drone-agent:
     image: drone/agent:0.8
@@ -33,7 +33,7 @@ services:
     depends_on:
       - drone-server
     volumes:
-      - /docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - DRONE_SERVER=drone-server:9000
       - DRONE_SECRET=${DRONE_SECRET}
